@@ -272,15 +272,15 @@ int similarity(string fListe, string alignMode="maxPrecision") {
 	else //fast
 		strcat(cmd,"/muscle -quiet -maxiters 2 -in ");
 	strcat(cmd, fListe.c_str());
-	//string liste = exec(cmd);
+	string liste = exec(cmd);
 	// Save the result
 	/*std::ofstream out("aligned.txt");
 	out << liste;
 	out.close();*/
 	// Read the alignmed result from a saved file
-	std::ifstream ifs("aligned.txt");
+	/*std::ifstream ifs("aligned.txt");
 	std::string liste( (std::istreambuf_iterator<char>(ifs) ),
-                       (std::istreambuf_iterator<char>()    ) );
+                       (std::istreambuf_iterator<char>()    ) );*/
 	if(liste==""){
 		return 1;
 	}
@@ -588,10 +588,10 @@ int main(int argc, char* argv[]) {
 		strcat(cmd,progPath);
 		strcat(cmd,"/gclust-GMM.py");
 	#endif
-		//exec(cmd);
-		//remove("matSimil.txt");
-		//remove("refs.txt");
-		//rename("Clustering.txt",fGroupes.c_str());
+		exec(cmd);
+		remove("matSimil.txt");
+		remove("refs.txt");
+		rename("Clustering.txt",fGroupes.c_str());
 
 	} else { //This is a calculation worker process
 
