@@ -8,6 +8,7 @@
 #include<mpi.h>
 using namespace std;
 
+bool installed=false;
 int Aligned_seq_length; //Alligned sequence length
 char progPath[255]=""; //Path of the program directory
 string mDist; //Distance matrix used for distance calculation
@@ -189,30 +190,24 @@ double ** matriceDistances(string **dicoMuscle, int n = nbSequences) {
 	ali1=new char[Aligned_seq_length+1];
 	ali2=new char[Aligned_seq_length+1];
 	if(numprocs == 1){
-		for (int i = 0; i<n; i++){
-			strcpy(ali1,dicoMuscle[i][1].c_str());
+		for (int i = 0; i<n; i++)
 			for (int j = i; j<n; j++){
+				strcpy(ali1,dicoMuscle[i][1].c_str());
 				strcpy(ali2,dicoMuscle[j][1].c_str());
 				matDist[i][j] = distanceS(mDist,ali1,ali2,gapOpenI,gapExtendI);
 			}
-		}
 	} else {
 		sendAlignedSeqLengthToWorkers();
-		int k;
 		for (int i = 0; i<n; i++)
-			for (int j = i; j<n; j+=numprocs){
-				strcpy(ali1,dicoMuscle[i][1].c_str());
-				for(k=0; k<numprocs-1 && (j+k)<n; k++){ //Dispatch the calculation to the worker processes
+			for (int j = i; j<n; j+=numprocs-1){
+				for(int k=0; k<numprocs-1 && (j+k)<n; k++){ //Dispatch the calculation to the worker processes
+					strcpy(ali1,dicoMuscle[i][1].c_str());
 					strcpy(ali2,dicoMuscle[j+k][1].c_str());
 					MPI_Send(&progEnd,1,MPI_INT,k+1,999,MPI_COMM_WORLD);
 					MPI_Send(ali1,Aligned_seq_length+1,MPI_CHAR,k+1,012,MPI_COMM_WORLD);
 					MPI_Send(ali2,Aligned_seq_length+1,MPI_CHAR,k+1,013,MPI_COMM_WORLD);
 				}
-				if((j+k)<n){
-					strcpy(ali2,dicoMuscle[j+k][1].c_str());
-					matDist[i][j+k]=distanceS(mDist,ali1,ali2,gapOpenI,gapExtendI);
-				}
-				for(k=0; k<numprocs-1 && (j+k)<n; k++){ //Collect the results from the worker processes
+				for(int k=0; k<numprocs-1 && (j+k)<n; k++){ //Collect the results from the worker processes
 					MPI_Recv(&buffDouble,1,MPI_DOUBLE,k+1,(k+1)*100+11,MPI_COMM_WORLD,&status);
 					matDist[i][j+k]=buffDouble;
 				}
@@ -264,13 +259,14 @@ int similarity(string fListe, string alignMode="maxPrecision") {
 	*/
 
 	char cmd[300] = "";
-	strcpy(cmd,progPath);
+	if(!installed)
+		strcpy(cmd,progPath);
 	if(alignMode=="maxPrecision")
-		strcat(cmd,"/muscle -quiet -in ");
+		strcat(cmd,"muscle -quiet -in ");
 	else if(alignMode=="moderate")
-		strcat(cmd,"/muscle -quiet -maxiters 4 -in ");
+		strcat(cmd,"muscle -quiet -maxiters 4 -in ");
 	else //fast
-		strcat(cmd,"/muscle -quiet -maxiters 2 -in ");
+		strcat(cmd,"muscle -quiet -maxiters 2 -in ");
 	strcat(cmd, fListe.c_str());
 	string liste = exec(cmd);
 	// Save the result
@@ -378,8 +374,8 @@ void killWorkers(){ //Send a message to the worker processes that the work is do
 int main(int argc, char* argv[]) {
 	int myid;
 	MPI_Init(&argc, &argv);
-    MPI_Comm_size(MPI_COMM_WORLD,&numprocs); 
-    MPI_Comm_rank(MPI_COMM_WORLD,&myid);
+	MPI_Comm_size(MPI_COMM_WORLD,&numprocs); 
+	MPI_Comm_rank(MPI_COMM_WORLD,&myid);
 	
 	//Setting default value and reading the input arguments needed by all processes
 	mDist="EDNAFULL";
@@ -419,7 +415,8 @@ int main(int argc, char* argv[]) {
 		string alignMode;
 
 		//Displaying usage message in case called without arguments
-		if(argc==1)
+		if(argc==1){
+			//cout<<"You are running "<<PACKAGE_STRING<<endl;
 			cout<<"You launched the program without arguments!\n\n"
 			<<"By default this program reads the genomes from the file named 'sequences.fasta' and outputs the clustering in the file 'Clustering.txt' in the current path.\n"
 			<<"The maximum precision will be used for the alignment. \n"
@@ -427,21 +424,37 @@ int main(int argc, char* argv[]) {
 			<<"You can customize this configuration by setting the arguments -in for selecting the input fasta file, -out for selecting the output txt file, -mdist for selecting a different matrix, -gapOpen and -gapExtend for setting custom values, and -alignMode for setting the alignment precision.\n"
 			<<"The currently configured matrices are: EDNAFULL, BLOSUM62, and PAM250.\n"
 			<<"Available options for -alignMode are: fast (max. 2 iterations), moderate (max. 4 iterations), and maxPrecision (maximum precision provided by muscle)."<<endl<<endl;
+		}
 
-		//Setting the path of our executable
+		//Setting the running path of our executable
 	#ifdef linux
 		realpath(argv[0], progPath);
 	#else			
 		_fullpath(progPath, argv[0], sizeof(progPath));
 	#endif
 	
-		progPath[strlen(progPath)-7]='\0';
+		progPath[strlen(progPath)-6]='\0';
+
+		//Checking if our program is installed
+	#ifdef linux
+		char chkcmd[20];
+		string gclustres, gclustGMMres, muscleres;
+		strcpy(chkcmd,"whereis gclust");
+		gclustres = exec(chkcmd);
+		strcpy(chkcmd,"whereis gclustGMM");
+		gclustGMMres = exec(chkcmd);
+		strcpy(chkcmd,"whereis muscle");
+		muscleres = exec(chkcmd);
+		if(gclustres.length()>9 && gclustGMMres.length()>12 && muscleres.length()>9)
+			installed=true;
+	#endif
+
 	
 		//Setting the default values for the arguments
 		fListe = string(progPath);
-		fListe += "/sequences.fasta";
+		fListe += "sequences.fasta";
 		fGroupes = string(progPath);
-		fGroupes += "/Clustering.txt";
+		fGroupes += "Clustering.txt";
 		alignMode = "maxPrecision";
 
 		//Reading the input arguments specific to the main process only
@@ -508,38 +521,38 @@ int main(int argc, char* argv[]) {
 	#ifdef linux
 		//Check muscle
 		strcpy(modsPath,progPath);
-		strcat(modsPath,"/muscle");
+		strcat(modsPath,"muscle");
 		std::ifstream infile2(modsPath);
-		if(!infile2.good()){
+		if(!infile2.good() && !installed){
 			cout<<"Error: muscle executable is missing or not accessible.\n\n";
 			killWorkers();
 			return 1;
 		}
-		//Check gclust-GMM
+		//Check gclustGMM
 		strcpy(modsPath,progPath);
-		strcat(modsPath,"/gclust-GMM");
+		strcat(modsPath,"gclustGMM");
 		std::ifstream infile3(modsPath);
-		if(!infile3.good()){
-			cout<<"Error: gclust-GMM executable is missing or not accessible.\n\n";
+		if(!infile3.good() && !installed){
+			cout<<"Error: gclustGMM executable is missing or not accessible.\n\n";
 			killWorkers();
 			return 1;
 		}
 	#else
 		//Check muscle
 		strcpy(modsPath,progPath);
-		strcat(modsPath,"/muscle.exe");
+		strcat(modsPath,"muscle.exe");
 		std::ifstream infile2(modsPath);
 		if(!infile2.good()){
 			cout<<"Error: muscle executable is missing or not accessible.\n\n";
 			killWorkers();
 			return 1;
 		}
-		//Check gclust-GMM
+		//Check gclustGMM
 		strcpy(modsPath,progPath);
-		strcat(modsPath,"/gclust-GMM.py");
+		strcat(modsPath,"gclustGMM.py");
 		std::ifstream infile3(modsPath);
 		if(!infile3.good()){
-			cout<<"Error: gclust-GMM.py file is missing or not accessible.\n\n";
+			cout<<"Error: gclustGMM.py file is missing or not accessible.\n\n";
 			killWorkers();
 			return 1;
 		}
@@ -580,13 +593,14 @@ int main(int argc, char* argv[]) {
 		killWorkers();
 			
 		char cmd[300]="";
-		strcat(cmd,progPath);
+		if(!installed)
+			strcat(cmd,progPath);
 	#ifdef linux
-		strcat(cmd,"/gclust-GMM");
+		strcat(cmd,"gclustGMM");
 	#else
 		strcpy(cmd,"python ");
 		strcat(cmd,progPath);
-		strcat(cmd,"/gclust-GMM.py");
+		strcat(cmd,"gclustGMM.py");
 	#endif
 		exec(cmd);
 		remove("matSimil.txt");
