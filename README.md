@@ -7,7 +7,8 @@ The current version of GClust uses Edgar, R.C.'s MUSCLE module (www.drive5.com) 
 - Extract the compressed package and go to the extracted directory from the console
 - Run the following commands: "./configure", "make"
 - Run the following command as a sudoer: "make install"
-- You can now call "gclust" from anywhere with the desired arguments.
+- You can now call "gclust" from anywhere with the desired arguments
+- For parallel computation call "gclust" via "mpirun"
 
 # Usage without installation on Linux
 - Get the executable files ("gclust", "gclustGMM", and "muscle") from the folder "Parallel"
