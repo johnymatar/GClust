@@ -25,5 +25,5 @@ For both Linux and Windows, just put the executable files together in a same dir
 - Run the following command as a sudoer: "make install"
 - You can now call "gclust" from anywhere with the desired arguments.
 
-# Integration into GALAXY
-Follow the instructions in the README file in the GALAXY folder
+# Integration into Galaxy
+Follow the instructions in the README file in the Galaxy folder
