@@ -28,7 +28,7 @@ Follow the instructions in the README file in the Galaxy folder
 
 # Current version features
 - Test for alignment failure
-- Parallel computation for the distance matrix using MPI. Serial if the number of processes is equal to 1
+- Parallel computation for the distance matrix using MPI. Serial if called without "mpirun" or "mpiexec"
 - Chequing the presence of all required modules and files on run
 - Supports arguments by using -mdist -in -out -alignMode -gapOpen -gapExtend for gclust:
  available mdist are EDNAFULL, BLOSUM62, and PAM250
