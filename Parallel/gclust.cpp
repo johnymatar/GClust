@@ -498,7 +498,7 @@ int main(int argc, char* argv[]) {
 		}
 	
 		//Check if the input fasta file is accessible and the required modules are present
-		std::ifstream infile(fListe);
+		std::ifstream infile(fListe.c_str());
 		if(!infile.good()){
 			cout<<"Error: The input fasta file is missing or not accessible.\n\n";
 			killWorkers();
