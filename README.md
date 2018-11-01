@@ -3,7 +3,7 @@ GClust is a package for divergent nucleotide sequences clustering. Contrarely to
 The current version of GClust uses Edgar, R.C.'s MUSCLE module (www.drive5.com) for sequences alignment.
 
 # Installation on Linux
-- Get the installation package from our repository "wget https://github.com/johnymatar/GClust/raw/master/gclust-01.11.18.tar.gz"
+- Get the installation package from our repository "wget https://github.com/johnymatar/GClust/raw/master/gclust-1.11.18.tar.gz"
 - Extract the compressed package and go to the extracted directory from the console
 - Run the following commands: "./configure", "make"
 - Run the following command as a sudoer: "make install"
