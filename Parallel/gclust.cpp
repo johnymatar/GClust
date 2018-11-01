@@ -198,16 +198,21 @@ double ** matriceDistances(string **dicoMuscle, int n = nbSequences) {
 			}
 	} else {
 		sendAlignedSeqLengthToWorkers();
+		int k;
 		for (int i = 0; i<n; i++)
-			for (int j = i; j<n; j+=numprocs-1){
-				for(int k=0; k<numprocs-1 && (j+k)<n; k++){ //Dispatch the calculation to the worker processes
-					strcpy(ali1,dicoMuscle[i][1].c_str());
+			for (int j = i; j<n; j+=numprocs){
+				strcpy(ali1,dicoMuscle[i][1].c_str());
+				for(k=0; k<numprocs-1 && (j+k)<n; k++){ //Dispatch the calculation to the worker processes
 					strcpy(ali2,dicoMuscle[j+k][1].c_str());
 					MPI_Send(&progEnd,1,MPI_INT,k+1,999,MPI_COMM_WORLD);
 					MPI_Send(ali1,Aligned_seq_length+1,MPI_CHAR,k+1,012,MPI_COMM_WORLD);
 					MPI_Send(ali2,Aligned_seq_length+1,MPI_CHAR,k+1,013,MPI_COMM_WORLD);
 				}
-				for(int k=0; k<numprocs-1 && (j+k)<n; k++){ //Collect the results from the worker processes
+				if((j+k)<n){
+					strcpy(ali2,dicoMuscle[j+k][1].c_str());
+					matDist[i][j+k]=distanceS(mDist,ali1,ali2,gapOpenI,gapExtendI);
+				}
+				for(k=0; k<numprocs-1 && (j+k)<n; k++){ //Collect the results from the worker processes
 					MPI_Recv(&buffDouble,1,MPI_DOUBLE,k+1,(k+1)*100+11,MPI_COMM_WORLD,&status);
 					matDist[i][j+k]=buffDouble;
 				}
@@ -382,9 +387,10 @@ int main(int argc, char* argv[]) {
 	for(int i=1; i<argc; i+=2)
 		if(strcmp(argv[i],"-mdist")==0)
 			if(i+1>=argc){
-				cout<<"Error: No data specified for argument "<<argv[i]<<".\n\n";
-				killWorkers();
-				return 1;
+				if(myid==0)
+					cout<<"Error: No data specified for argument "<<argv[i]<<".\n\n";
+				MPI_Finalize();
+				return 0;
 			} else
 				mDist=argv[i+1];
 
@@ -392,9 +398,10 @@ int main(int argc, char* argv[]) {
 	for(int i=1; i<argc; i+=2)
 		if(strcmp(argv[i],"-gapOpen")==0)
 			if(i+1>=argc){
-				cout<<"Error: No data specified for argument "<<argv[i]<<".\n\n";
-				killWorkers();
-				return 1;
+				if(myid==0)
+					cout<<"Error: No data specified for argument "<<argv[i]<<".\n\n";
+				MPI_Finalize();
+				return 0;
 			} else
 				gapOpenI=atof(argv[i+1]);
 	
@@ -403,9 +410,10 @@ int main(int argc, char* argv[]) {
 	for(int i=1; i<argc; i+=2)
 		if(strcmp(argv[i],"-gapExtend")==0)
 			if(i+1>=argc){
-				cout<<"Error: No data specified for argument "<<argv[i]<<".\n\n";
-				killWorkers();
-				return 1;
+				if(myid==0)
+					cout<<"Error: No data specified for argument "<<argv[i]<<".\n\n";
+				MPI_Finalize();
+				return 0;
 			} else
 				gapExtendI=atof(argv[i+1]);
 
@@ -463,7 +471,8 @@ int main(int argc, char* argv[]) {
 				if(i+1>=argc){
 				cout<<"Error: No data specified for argument "<<argv[i]<<".\n\n";
 				killWorkers();
-				return 1;
+				MPI_Finalize();
+				return 0;
 			} else
 				fListe=argv[i+1];
 
@@ -472,7 +481,8 @@ int main(int argc, char* argv[]) {
 				if(i+1>=argc){
 				cout<<"Error: No data specified for argument "<<argv[i]<<".\n\n";
 				killWorkers();
-				return 1;
+				MPI_Finalize();
+				return 0;
 			} else
 				fGroupes=argv[i+1];
 
@@ -481,7 +491,8 @@ int main(int argc, char* argv[]) {
 				if(i+1>=argc){
 				cout<<"Error: No data specified for argument "<<argv[i]<<".\n\n";
 				killWorkers();
-				return 1;
+				MPI_Finalize();
+				return 0;
 			} else
 				alignMode=argv[i+1];
 
@@ -489,25 +500,29 @@ int main(int argc, char* argv[]) {
 		if(mDist!="EDNAFULL" && mDist!="BLOSUM62" && mDist!="PAM250"){
 			cout<<"Error: Invalid distance matrix. Available matrices are: EDNAFULL, BLOSUM62, and PAM250.\n";
 			killWorkers();
-			return 1;
+			MPI_Finalize();
+			return 0;
 		}
 
 		if(alignMode!="fast" && alignMode!="moderate" && alignMode!="maxPrecision"){
 			cout<<"Error: Invalid alignmnet mode. Available modes are: fast, moderate, and maxPrecision.\n";
 			killWorkers();
-			return 1;
+			MPI_Finalize();
+			return 0;
 		}
 
 		if (fListe.substr(fListe.find_last_of(".") + 1) != "fasta" && fListe.substr(fListe.find_last_of(".") + 1) != "dat"){
 			cout << "Error: Invalid input filename! Please input a fasta file containing the genomes using the argument -in.\n";
 			killWorkers();
-			return 1;
+			MPI_Finalize();
+			return 0;
 		}
 
 		if (fGroupes.substr(fGroupes.find_last_of(".") + 1) != "txt" && fGroupes.substr(fGroupes.find_last_of(".") + 1) != "dat"){
 			cout << "Error: Invalid output filename! Please name a txt file for the results using the argument -out.\n";
 			killWorkers();
-			return 1;
+			MPI_Finalize();
+			return 0;
 		}
 	
 		//Check if the input fasta file is accessible and the required modules are present
@@ -515,7 +530,8 @@ int main(int argc, char* argv[]) {
 		if(!infile.good()){
 			cout<<"Error: The input fasta file is missing or not accessible.\n\n";
 			killWorkers();
-			return 1;
+			MPI_Finalize();
+			return 0;
 		}
 		char modsPath[300]="";//For storing the paths of the required files in order to check their existance		
 	#ifdef linux
@@ -526,7 +542,8 @@ int main(int argc, char* argv[]) {
 		if(!infile2.good() && !installed){
 			cout<<"Error: muscle executable is missing or not accessible.\n\n";
 			killWorkers();
-			return 1;
+			MPI_Finalize();
+			return 0;
 		}
 		//Check gclustGMM
 		strcpy(modsPath,progPath);
@@ -535,7 +552,8 @@ int main(int argc, char* argv[]) {
 		if(!infile3.good() && !installed){
 			cout<<"Error: gclustGMM executable is missing or not accessible.\n\n";
 			killWorkers();
-			return 1;
+			MPI_Finalize();
+			return 0;
 		}
 	#else
 		//Check muscle
@@ -545,7 +563,8 @@ int main(int argc, char* argv[]) {
 		if(!infile2.good()){
 			cout<<"Error: muscle executable is missing or not accessible.\n\n";
 			killWorkers();
-			return 1;
+			MPI_Finalize();
+			return 0;
 		}
 		//Check gclustGMM
 		strcpy(modsPath,progPath);
@@ -554,7 +573,8 @@ int main(int argc, char* argv[]) {
 		if(!infile3.good()){
 			cout<<"Error: gclustGMM.py file is missing or not accessible.\n\n";
 			killWorkers();
-			return 1;
+			MPI_Finalize();
+			return 0;
 		}
 	#endif
 	
@@ -562,7 +582,8 @@ int main(int argc, char* argv[]) {
 		if(similarity(fListe,alignMode)==1){
 			killWorkers();
 			cout<<"Sequences alignment failed. Job aborted!\n";
-			return 1;
+			MPI_Finalize();
+			return 0;
 		}
 		string matriceSimilitude="";
 		string refsGenomes="";
@@ -610,8 +631,10 @@ int main(int argc, char* argv[]) {
 	} else { //This is a calculation worker process
 
 		MPI_Recv(&progEnd, 1, MPI_INT, 0, 999, MPI_COMM_WORLD, &status); //Check if there is no work to do
-		if(progEnd==1)
+		if(progEnd==1){
+			MPI_Finalize();
 			return 0; //If the is no work then exit (end process)
+		}
 
 		MPI_Recv(&Aligned_seq_length, 1, MPI_INT, 0, 998, MPI_COMM_WORLD, &status); //Receive the aligned sequence size
 		buffChar1=new char[Aligned_seq_length+1];
