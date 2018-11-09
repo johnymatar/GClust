@@ -3,7 +3,7 @@ GClust is a package for divergent nucleotide sequences clustering. Contrarely to
 The current version of GClust uses Edgar, R.C.'s MUSCLE module (www.drive5.com) for sequences alignment.
 
 # Installation on Linux
-- Get the installation package from our repository "wget https://github.com/johnymatar/GClust/raw/master/gclust-1.11.18.tar.gz"
+- Get the installation package from our repository "wget https://github.com/johnymatar/GClust/raw/master/gclust.tar.gz"
 - Extract the compressed package and go to the extracted directory from the console
 - Run the following commands: "./configure", "make"
 - Run the following command as a sudoer: "make install"
@@ -29,12 +29,12 @@ Follow the instructions in the README file in the Galaxy folder
 # Current version features
 - Test for alignment failure
 - Parallel computation for the distance matrix using MPI. Serial if called without "mpirun" or "mpiexec"
-- Chequing the presence of all required modules and files on run
+- Checking the presence of all required modules and files prior run
 - Supports arguments by using -mdist -in -out -alignMode -gapOpen -gapExtend for gclust:
  available mdist are EDNAFULL, BLOSUM62, and PAM250
  available alignMode are: fast, moderate, maxPrecision
-- Calls LaplacianAndGMM from python sub-module gclust-GMM.py on Windows
-- LaplacianAndGMM python sub-module is converted to gclust-GMM executable on Linux for easier use
-- Runs, via the executable, from anywhere from the original directory without the need of environment variables. Needs all the dependent file to be present in its directory (muscle executable and gclust-GMM)
+- Calls LaplacianAndGMM from python sub-module gclustGMM.py on Windows
+- LaplacianAndGMM python sub-module is converted to gclustGMM executable on Linux for easier use
+- Runs, via the executable, from anywhere from the original directory without the need of environment variables. Needs all the dependent file to be present in its directory (muscle executable and gclustGMM)
 - Can enable figures displaying from the python sub-module.
 - Compatible for Galaxy integration

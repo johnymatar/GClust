@@ -1,3 +1,4 @@
+//#include<amconf.h>
 #include<iostream>
 #include<cstdlib>
 #include<fstream>
@@ -425,23 +426,26 @@ int main(int argc, char* argv[]) {
 		//Displaying usage message in case called without arguments
 		if(argc==1){
 			//cout<<"You are running "<<PACKAGE_STRING<<endl;
-			cout<<"You launched the program without arguments!\n\n"
-			<<"By default this program reads the genomes from the file named 'sequences.fasta' and outputs the clustering in the file 'Clustering.txt' in the current path.\n"
-			<<"The maximum precision will be used for the alignment. \n"
-			<<"The default distance matrix used is EDNAFULL with gapOpen=-10 and gapExtend=-0.5.\n\n"
-			<<"You can customize this configuration by setting the arguments -in for selecting the input fasta file, -out for selecting the output txt file, -mdist for selecting a different matrix, -gapOpen and -gapExtend for setting custom values, and -alignMode for setting the alignment precision.\n"
-			<<"The currently configured matrices are: EDNAFULL, BLOSUM62, and PAM250.\n"
-			<<"Available options for -alignMode are: fast (max. 2 iterations), moderate (max. 4 iterations), and maxPrecision (maximum precision provided by muscle)."<<endl<<endl;
+			cout<<"GClust performs nucleotides sequences clustering using GMM.\n\n"
+			<<"usage: gclust -in [input fasta file] -out [output fasta file] -alignMode [alignment mode] -mdist [scoring matrix]\n\n"
+			<<"Available scoring matrices are EDNAFULL, BLOSUM62, and PAM250. Defaults to EDNAFULL if not specified.\n"
+			<<"Available alignment modes are: fast, moderate, maxPrecision. fast and moderate limit the number of iterations for the alignment to 2 and 4 respectively (using MUSCLE). Defaults to maxPrecision if not specified.\n\n"
+			<<"Note: parameters are case sensitive, e.g. using -alignmode instead of -alignMode will cause this parameter to be disregarded, and using blosum62 instead of BLOSUM62 will be mentioned as an error.\n\n";
+			killWorkers();
+			MPI_Finalize();
+			return 0;
 		}
 
 		//Setting the running path of our executable
 	#ifdef linux
 		realpath(argv[0], progPath);
+		progPath[strlen(progPath)-6]='\0';
+		//strcpy(progPath,exec("pwd").c_str());
+		//progPath[strlen(progPath)-1]='/';
 	#else			
 		_fullpath(progPath, argv[0], sizeof(progPath));
-	#endif
-	
 		progPath[strlen(progPath)-6]='\0';
+	#endif
 
 		//Checking if our program is installed
 	#ifdef linux

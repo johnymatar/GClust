@@ -273,8 +273,8 @@ w = []
 for u in M[0:-1]:
     v = u.split(' ')
     w.append(v[0:-1])
-for i in range(100):
-    for j in range(100):
+for i in range(len(w)):
+    for j in range(len(w[0]):
         w[i][j] = eval(w[i][j])
 w = asmatrix(w)  
 #print w
