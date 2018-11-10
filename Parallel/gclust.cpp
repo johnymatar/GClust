@@ -436,17 +436,6 @@ int main(int argc, char* argv[]) {
 			return 0;
 		}
 
-		//Setting the running path of our executable
-	#ifdef linux
-		realpath(argv[0], progPath);
-		progPath[strlen(progPath)-6]='\0';
-		//strcpy(progPath,exec("pwd").c_str());
-		//progPath[strlen(progPath)-1]='/';
-	#else			
-		_fullpath(progPath, argv[0], sizeof(progPath));
-		progPath[strlen(progPath)-6]='\0';
-	#endif
-
 		//Checking if our program is installed
 	#ifdef linux
 		char chkcmd[20];
@@ -457,11 +446,25 @@ int main(int argc, char* argv[]) {
 		gclustGMMres = exec(chkcmd);
 		strcpy(chkcmd,"whereis muscle");
 		muscleres = exec(chkcmd);
-		if(gclustres.length()>9 && gclustGMMres.length()>12 && muscleres.length()>9)
+		if(gclustres.length()>9 && gclustGMMres.length()>12 && muscleres.length()>9){
 			installed=true;
+			//Setting the working directory
+			strcpy(progPath,exec("pwd").c_str());
+			progPath[strlen(progPath)-1]='/';
+		}
 	#endif
-
 	
+		if(!installed){
+		//Setting the running path of our executables
+		#ifdef linux
+			realpath(argv[0], progPath);
+			progPath[strlen(progPath)-6]='\0';
+		#else			
+			_fullpath(progPath, argv[0], sizeof(progPath));
+			progPath[strlen(progPath)-6]='\0';
+		#endif
+		}
+
 		//Setting the default values for the arguments
 		fListe = string(progPath);
 		fListe += "sequences.fasta";
