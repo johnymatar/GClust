@@ -3,20 +3,21 @@ GClust is a package for divergent nucleotide sequences clustering. Contrarely to
 The current version of GClust uses Edgar, R.C.'s MUSCLE module (www.drive5.com) for sequences alignment.
 
 # Installation on Linux
-- Get the installation files from the "Linux/Install" folder in our repository "svn checkout https://github.com/johnymatar/GClust/trunk/Linux/Install" (subversion package is needed to use "svn": as a sudoer, run "apt-get install subversion").
-- Browse to the download directory: "cd Install"
-- Run the following commands: "chmod 777 configure", "./configure", "make"
+- Get the installation package from the "Linux" folder in our repository: "wget https://github.com/johnymatar/GClust/raw/master/Linux/install.tar.xz"
+- Extract the package: "tar install.tar.xz"
+- Run the following commands: "cd gclust", "./configure", "make"
 - Run the following command as a sudoer: "make install"
-- You can now call "gclust" from anywhere with the desired arguments
-- For parallel computation call "mpigclust"
+- You can now call the executables from anywhere with the desired arguments
+- For serial computation use "gclust with the desired arguments
+- For parallel computation use "mpigclust" with the desired arguments
 - To use the graphical interface, install mono (run "apt install mono-runtime" as a sudoer) and then call "guigclust"
 
 # Usage without installation on Linux
-- Get the files from the "Linux/Standalone" folder in our repository "svn checkout https://github.com/johnymatar/GClust/trunk/Linux/Standalone" (subversion package is needed to use "svn": as a sudoer, run "apt-get install subversion").
-- Keep them together in a same directory and browse to that directory from the console: "cd Standalone"
-- For the first use ONLY: fix the executables properties by running the command "chmod 777 * "
-- Call "gclust" with the desired arguments from there
-- For parallel computation call "mpigclust" with the desired arguments
+- Get the standalone package from the "Linux" folder in our repository: "wget https://github.com/johnymatar/GClust/raw/master/Linux/standalone.tar.xz"
+- Extract the package: "tar standalone.tar.xz"
+- Keep the extracted files together in a same directory and, for each use, browse to that directory from the console: e.g. "cd ~/gclust"
+- For serial computation use "gclust with the desired arguments
+- For parallel computation use "mpigclust" with the desired arguments
 - To use the graphical interface, install mono (run "apt install mono-runtime" as a sudoer) and then call "guigclust"
 
 # Usage without installation on M.S. Windows
