@@ -1,6 +1,7 @@
 GClust performs nucleotides sequences clustering using GMM
 
-usage: gclust -in [input fasta file] -out [output fasta file] -alignMode [alignment mode] -mdist [scoring matrix]
+usage: mpigclust -in [input fasta file] -out [output fasta file] -alignMode [alignment mode] -mdist [scoring matrix]
+   or: mpiexec -n [number of processes] gclust -in [input fasta file] -out [output fasta file] -alignMode [alignment mode] -mdist [scoring matrix]
 
 Available scoring matrices are EDNAFULL, BLOSUM62, and PAM250. Defaults to EDNAFULL if not specified.
 Available alignment modes are: fast, moderate, maxPrecision. fast and moderate limit the number of iterations for the alignment to 2 and 4 respectively (using MUSCLE). Defaults to maxPrecision if not specified.
