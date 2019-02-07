@@ -1,6 +1,17 @@
 # GClust
-GClust is a package for divergent nucleotide sequences clustering. Contrarely to traditional clustering methods that focuses on the speed of clustering highly similar sequences, GClust uses a Machine Learning Gaussian Mixture Model and targets the clustering accuracy of divergent sequences with the best possible speed.
+GCLUST is a package for divergent nucleotide sequences clustering. Contrarely to traditional clustering methods that focuses on the speed of clustering highly similar sequences, GCLUST uses a Machine Learning Gaussian Mixture Model and targets the clustering accuracy of divergent sequences with the best possible speed.
 The current version of GClust uses Edgar, R.C.'s MUSCLE module (www.drive5.com) for sequences alignment.
+
+# Prerequisite
+GCLUST uses MPI for parallel computation and the executable building for the installation package. Below are some basic instractions for installing MPI on your system.
+- For Linux users:
+  •	install mpich
+  •	install openmpi
+  •	install openmpi-devel
+  •	echo "export PATH=$PATH:/usr/lib64/openmpi/bin" >> ~/.bashrc
+- For Windows users:
+  •	Download MS-MPI SDK and Redist installers from Microsoft's website: https://msdn.microsoft.com/en-us/library/bb524831.aspx
+  •	Install the downloaded packages
 
 # Installation on Linux
 - Get the installation package from the "Linux" folder in our repository: "wget https://github.com/johnymatar/GClust/raw/master/Linux/install.tar.xz"
