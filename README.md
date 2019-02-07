@@ -16,9 +16,9 @@ The current version of GClust uses Edgar, R.C.'s MUSCLE module (www.drive5.com) 
 - Get the standalone package from the "Linux" folder in our repository: "wget https://github.com/johnymatar/GClust/raw/master/Linux/standalone.tar.xz"
 - Extract the package: "tar -xvf standalone.tar.xz"
 - Keep the extracted files together in a same directory and, for each use, browse to that directory from the console: e.g. "cd ~/gclust"
-- For serial computation use "gclust with the desired arguments
-- For parallel computation use "mpigclust" with the desired arguments
-- To use the graphical interface, install mono (run "apt install mono-complete" as a sudoer) and then call "guigclust"
+- For serial computation use "./gclust" with the desired arguments
+- For parallel computation use "./mpigclust" with the desired arguments
+- To use the graphical interface, install mono (run "apt install mono-complete" as a sudoer) and then call "./guigclust"
 
 # Usage without installation on M.S. Windows
 - As a prerequisite, install Python 2.7 along with its following libraries: numpy, matplotlib, scikit-learn, scipy, cogent, BioPython
