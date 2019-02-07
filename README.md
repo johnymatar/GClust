@@ -4,7 +4,7 @@ The current version of GClust uses Edgar, R.C.'s MUSCLE module (www.drive5.com) 
 
 # Installation on Linux
 - Get the installation package from the "Linux" folder in our repository: "wget https://github.com/johnymatar/GClust/raw/master/Linux/install.tar.xz"
-- Extract the package: "tar install.tar.xz"
+- Extract the package: "tar -xvf install.tar.xz"
 - Run the following commands: "cd gclust", "./configure", "make"
 - Run the following command as a sudoer: "make install"
 - You can now call the executables from anywhere with the desired arguments
@@ -14,7 +14,7 @@ The current version of GClust uses Edgar, R.C.'s MUSCLE module (www.drive5.com) 
 
 # Usage without installation on Linux
 - Get the standalone package from the "Linux" folder in our repository: "wget https://github.com/johnymatar/GClust/raw/master/Linux/standalone.tar.xz"
-- Extract the package: "tar standalone.tar.xz"
+- Extract the package: "tar -xvf standalone.tar.xz"
 - Keep the extracted files together in a same directory and, for each use, browse to that directory from the console: e.g. "cd ~/gclust"
 - For serial computation use "gclust with the desired arguments
 - For parallel computation use "mpigclust" with the desired arguments
