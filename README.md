@@ -3,7 +3,7 @@ GCLUST is a package for divergent nucleotide sequences clustering. Contrarely to
 The current version of GClust uses Edgar, R.C.'s MUSCLE module (www.drive5.com) for sequences alignment.
 
 # Prerequisite
-GCLUST uses MPI for parallel computation and the executable building for the installation package. Below are some basic instractions for installing MPI on your system.
+GCLUST uses MPI for parallel computation and the executable building for the installation package. Below are some basic instructions for installing MPI on your system.
 - For Linux users:
   •	install mpich
   •	install openmpi
