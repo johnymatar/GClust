@@ -1,23 +1,35 @@
 # GClust
-GClust is a package for divergent nucleotide sequences clustering. Contrarely to traditional clustering methods that focuses on the speed of clustering highly similar sequences, GClust uses a Machine Learning Gaussian Mixture Model and targets the clustering accuracy of divergent sequences with the best possible speed.
+GCLUST is a package for divergent nucleotide sequences clustering. Contrarely to traditional clustering methods that focuses on the speed of clustering highly similar sequences, GCLUST uses a Machine Learning Gaussian Mixture Model and targets the clustering accuracy of divergent sequences with the best possible speed.
 The current version of GClust uses Edgar, R.C.'s MUSCLE module (www.drive5.com) for sequences alignment.
 
+# Prerequisite
+GCLUST uses MPI for parallel computation and the executable building for the installation package. Below are some basic instructions for installing MPI on your system.
+- For Linux users:
+  •	install mpich
+  •	install openmpi
+  •	install openmpi-devel
+  •	echo "export PATH=$PATH:/usr/lib64/openmpi/bin" >> ~/.bashrc
+- For Windows users:
+  •	Download MS-MPI SDK and Redist installers from Microsoft's website: https://msdn.microsoft.com/en-us/library/bb524831.aspx
+  •	Install the downloaded packages
+
 # Installation on Linux
-- Get the installation files from the "Linux/Install" folder in our repository "svn checkout https://github.com/johnymatar/GClust/trunk/Linux/Install" (subversion package is needed to use "svn": as a sudoer, run "apt-get install subversion").
-- Browse to the download directory: "cd Install"
-- Run the following commands: "chmod 777 configure", "./configure", "make"
+- Get the installation package from the "Linux" folder in our repository: "wget https://github.com/johnymatar/GClust/raw/master/Linux/install.tar.xz"
+- Extract the package: "tar -xvf install.tar.xz"
+- Run the following commands: "cd gclust", "./configure", "make"
 - Run the following command as a sudoer: "make install"
-- You can now call "gclust" from anywhere with the desired arguments
-- For parallel computation call "mpigclust"
-- To use the graphical interface, install mono (run "apt install mono-runtime" as a sudoer) and then call "guigclust"
+- You can now call the executables from anywhere with the desired arguments
+- For serial computation use "gclust with the desired arguments
+- For parallel computation use "mpigclust" with the desired arguments
+- To use the graphical interface, install mono (run "apt install mono-complete" as a sudoer) and then call "guigclust"
 
 # Usage without installation on Linux
-- Get the files from the "Linux/Standalone" folder in our repository "svn checkout https://github.com/johnymatar/GClust/trunk/Linux/Standalone" (subversion package is needed to use "svn": as a sudoer, run "apt-get install subversion").
-- Keep them together in a same directory and browse to that directory from the console: "cd Standalone"
-- For the first use ONLY: fix the executables properties by running the command "chmod 777 * "
-- Call "gclust" with the desired arguments from there
-- For parallel computation call "mpigclust" with the desired arguments
-- To use the graphical interface, install mono (run "apt install mono-runtime" as a sudoer) and then call "guigclust"
+- Get the standalone package from the "Linux" folder in our repository: "wget https://github.com/johnymatar/GClust/raw/master/Linux/standalone.tar.xz"
+- Extract the package: "tar -xvf standalone.tar.xz"
+- Keep the extracted files together in a same directory and, for each use, browse to that directory from the console: e.g. "cd ~/gclust"
+- For serial computation use "./gclust" with the desired arguments
+- For parallel computation use "./mpigclust" with the desired arguments
+- To use the graphical interface, install mono (run "apt install mono-complete" as a sudoer) and then call "./guigclust"
 
 # Usage without installation on M.S. Windows
 - As a prerequisite, install Python 2.7 along with its following libraries: numpy, matplotlib, scikit-learn, scipy, cogent, BioPython
